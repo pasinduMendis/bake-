@@ -7,8 +7,9 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const dataBase = require('./database.js')
 const customerRoutes = require('./routes/customerRoutes')
-const dataRoutes = require('./routes/dataRoutes')
+const customizeRoute = require('./routes/customizeRoute')
 const designRoutes = require('./routes/designRoutes.js')
+const cartRoutes = require('./routes/cart.js')
 
 mongoose
   .connect(dataBase.DB, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -26,8 +27,9 @@ app.use(bodyParser.json())
 
 app.use(cors())
 app.use('/customer', customerRoutes)
-app.use('/data', dataRoutes)
 app.use('/design', designRoutes)
+app.use('/cart',cartRoutes)
+app.use('/customize',customizeRoute)
 
 app.listen(PORT, function () {
   console.log('saver is running on :', PORT)

@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const nodemailer=require("nodemailer");
 require('dotenv').config();
 
+//email verification
 customerRoutes.get("/emailVerify", async (req, res) => {
   //res.send(failHtml("aaa"))
   var body={};
@@ -42,6 +43,7 @@ customer
 
 })
 
+//customer register
 customerRoutes.post("/sign-up", async (req, res) => {
   const customer = req.body;
   customer["customer_id"] = uuidv4();
@@ -107,13 +109,14 @@ customerRoutes.post("/sign-up", async (req, res) => {
   }
 });
 
+//customer sign-in
 customerRoutes.get("/sign-in", async (req, res) => {
   const { email, password } = req.query;
   if (!email || !password) {
     res.send("email and password must needed.");
     return;
   }
-  const findId = await Customer.findOne({
+  var findId = await Customer.findOne({
     email: email,
   }).catch((err) => {
     console.log(err);
@@ -126,7 +129,9 @@ customerRoutes.get("/sign-in", async (req, res) => {
   }
   const validPassword = await bcrypt.compare(password, findId.password);
   if (validPassword) {
-    res.send(findId);
+    const token = jwt.sign({ id: findId.customer_id }, process.env.JWT_SECRET, {});
+    const resUser={userToken:token,...findId._doc}
+    res.send(resUser);
     return;
   } else {
     res.send("incorrect password");
@@ -134,6 +139,7 @@ customerRoutes.get("/sign-in", async (req, res) => {
   }
 });
 
+//admin sign-in
 customerRoutes.get("/admin/sign-in", async (req, res) => {
   const { email, password } = req.query;
   if (!email || !password) {
@@ -163,6 +169,7 @@ customerRoutes.get("/admin/sign-in", async (req, res) => {
   }
 });
 
+//create account email template
 const createAccountHTML=(token)=>`<head>
 <style>
 .button {
@@ -197,6 +204,7 @@ const createAccountHTML=(token)=>`<head>
  </div>
  </body>`
 
+ //success email template
  const createAccountSuccessHTML=`<head><link
 href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
 rel="stylesheet"
@@ -223,7 +231,7 @@ crossorigin="anonymous"
     ></script>
  </body>`
 
- //failed html
+ //failed email template
  const failHtml=(msg)=> {return`<head><link
  href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
  rel="stylesheet"

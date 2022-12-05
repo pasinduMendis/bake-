@@ -8,7 +8,7 @@ const designSchema = mongoose.Schema({
   category: { type: String, required: true },
   image: { type: [], required: true },
   variation: { type: [{size:{type: String, required: true},price:{type: String, required: true}}], required: true },
-  customize:{type:[{customize_id:{type: String, required: true},available_options:{type: [], required: true}}]},
+  customize:{type:[{customize_id:{type: String, required: true},available_options:{type: [{variation_id:{type: String, required: true}}], required: true}}]},
   discount_presentage:{type:String,required:false,default:0}
 })
 

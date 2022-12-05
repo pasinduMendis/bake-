@@ -2,6 +2,7 @@ const express = require('express')
 const designRoutes = express.Router()
 const Design = require('../models/designModel')
 const jwt=require("jsonwebtoken")
+const Customer = require("../models/customerModel");
 
 const adminverify=async (token)=>{
     try {
@@ -14,7 +15,7 @@ const adminverify=async (token)=>{
         if (!decoded) {
           return false;
         }else{
-            const idVrify=await Design.findOne({customer_id:decoded.id.customer_id,isAdmin:true}).catch((err) => {
+            const idVrify=await Customer.findOne({customer_id:decoded.id.customer_id,isAdmin:true}).catch((err) => {
                 console.log(err);
                 return false;
               });
@@ -54,6 +55,7 @@ designRoutes.post('/add', async (req, res) => {
     .save()
     .then(() => {
       res.send('successfully added')
+      return
     })
     .catch((err) => res.send('failed'))
 })
@@ -80,6 +82,7 @@ designRoutes.get('/:id', async (req, res) => {
     res.send(relevantDesigns)
   })
 
+  //update relevant design
   designRoutes.put('/update/:id', async (req, res) => {
     if(!req.query.token){
         res.send("admin token must needed!")
